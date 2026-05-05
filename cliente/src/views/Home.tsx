@@ -6,6 +6,8 @@ import Onboarding from '../components/Onboarding'
 
 export default function Home(){
   const [isFirstTime, setIsFirstTime]= useState(true)
+
+  console.log(setIsFirstTime)
   
   if(isFirstTime) return <Onboarding/>
   
