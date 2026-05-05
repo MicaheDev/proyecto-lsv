@@ -30,7 +30,6 @@ const updateSW = registerSW({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Scaffold TopBar={<TopBar/>} BottomBar={<BottomBar/>}/>,
     children: [
       {path: "", Component: Home}
     ]
