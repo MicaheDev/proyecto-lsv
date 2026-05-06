@@ -9,6 +9,8 @@ import Home from "./views/Home";
 
 // 2. Registro del Service Worker (Importación Virtual)
 import { registerSW } from "virtual:pwa-register";
+import Layout from "./layouts/Layout";
+import Learn from "./views/Learn";
 
 // 3. Ejecución inmediata del registro
 const updateSW = registerSW({
@@ -27,7 +29,11 @@ const updateSW = registerSW({
 const router = createBrowserRouter([
   {
     path: "/",
-    children: [{ path: "", Component: Home }],
+    Component: Layout,
+    children: [
+      { path: "", Component: Home },
+      { path: "/aprender", Component: Learn },
+    ],
   },
 ]);
 
