@@ -7,6 +7,9 @@ type Props = {};
 export default function Learn({}: Props) {
   return <Scaffold TopBar={<TopBar />} BottomBar={<BottomBar />}>
 
-    <h1>hola</h1>
+    <div className="w-full h-full px-8 py-6">
+      
+      <h1>Contenido curso</h1>
+    </div>
   </Scaffold>;
 }

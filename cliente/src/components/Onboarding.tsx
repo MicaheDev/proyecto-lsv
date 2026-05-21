@@ -1,22 +1,26 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
+import {clsx} from "clsx"
 const slides: any[] = [
   {
     id: "1",
     title: "¡Hola! Vamos a aprender señas juntos",
     imgSrc: "1.jpg",
+    className: "w-full h-60 object-cover"
   },
 
   {
     id: "2",
     title: "Mira el video y repite el movimiento",
     imgSrc: "2.gif",
+ className: "w-40 h-min object-cover"
   },
 
   {
     id: "3",
     title: "Usa tu cámara para que te ayudemos",
     imgSrc: "3.jpg",
+ className: "w-full h-60 object-cover"
   },
 ];
 export default function Onboarding() {
@@ -50,7 +54,7 @@ export default function Onboarding() {
           >
             <h1 className="text-center text-4xl font-black">{slide.title}</h1>
             <img
-              className="w-full h-60 object-cover rounded-4xl"
+              className={clsx("rounded-4xl", slide.className)}
               src={slide.imgSrc}
             />
           </div>
