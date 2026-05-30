@@ -11,6 +11,7 @@ import Home from "./views/Home";
 import { registerSW } from "virtual:pwa-register";
 import Layout from "./layouts/Layout";
 import Learn from "./views/Learn";
+import VisionLandMark from "./components/VisionLandMark";
 
 // 3. Ejecución inmediata del registro
 const updateSW = registerSW({
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", Component: Home },
       { path: "/aprender", Component: Learn },
+      { path: "/vision", Component: VisionLandMark },
     ],
   },
 ]);
