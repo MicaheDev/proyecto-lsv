@@ -9,7 +9,7 @@ def hello_world():
 
 @app.route('/datos-lsv')
 def obtener_datos():
-    conn = sqlite3.connect('lsv.db')
+    conn = sqlite3.connect('plsv.db')
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     

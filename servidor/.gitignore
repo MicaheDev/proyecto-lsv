@@ -1,2 +1,55 @@
-# Logs
-env
+# Entornos virtuales
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Dependencias (si usas pipenv o Poetry)
+.venv/
+
+# Archivos de entorno y configuración sensible
+.env
+secret_key.txt
+instance/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de empaquetado y distribución
+build/
+develop-eggs/
+dist/
+eggs/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Archivos de bases de datos locales
+*.sqlite3
+*.db
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de registro y cobertura
+*.log
+*.cover
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Archivos temporales de editores y sistemas operativos
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+*.sublime-workspace
