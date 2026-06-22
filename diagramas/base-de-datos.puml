@@ -1,0 +1,133 @@
+@startuml
+skinparam roundcorner 5
+skinparam linetype ortho
+
+entity Usuario {
+    * id_usuario : INT (PK)
+    --
+    * cedula : VARCHAR(128)
+    * contraseña : VARCHAR(256)
+    * rol : VARCHAR(50)
+}
+
+entity Cuenta {
+    * id_cuenta : INT (PK)
+    --
+    * id_usuario : INT (FK)
+    * id_nivel_actual : INT (FK)
+    * vidas : INT
+    ultima_vida_perdida : DATETIME
+    * experiencia_total : INT
+    * fecha_de_creacion : DATE
+    ' --- Ajustes de Personalización e Inclusión ---
+    * nivel_dificultad_elegido : VARCHAR(50) ' Fácil, Medio, Difícil
+    * ajuste_autismo_interfaz : BOOLEAN ' Cambia paleta de colores/estímulos
+    religion_usuario : VARCHAR(100) ' Para filtrado de contenido sensible
+}
+
+entity Progreso_Leccion {
+    * id_cuenta : INT (PK, FK)
+    * id_leccion : INT (PK, FK)
+    --
+    * completado : BOOLEAN
+    * fecha_completado : DATETIME
+}
+
+entity Nivel {
+    * id_nivel : INT (PK)
+    --
+    * codigo : VARCHAR(10) ' A1, A2, etc.
+    * name : VARCHAR(128)
+    * experiencia_requerida : INT
+}
+
+entity Seccion {
+    * id_seccion : INT (PK)
+    --
+    * id_nivel : INT (FK)
+    * title : VARCHAR(128)
+    * position : INT
+}
+
+entity Unidad {
+    * id_unidad : INT (PK)
+    --
+    * id_seccion : INT (FK)
+    * about : VARCHAR(128)
+    * position : INT
+}
+
+entity Grupo_Lecciones {
+    * id_grupo_lecciones : INT (PK)
+    --
+    * id_unidad : INT (FK)
+    * position : INT 
+    * title : VARCHAR(128)
+}
+
+entity Leccion {
+    * id_leccion : INT (PK)
+    --
+    * id_grupo_lecciones : INT (FK)
+    * id_tipo_de_leccion : INT (FK)
+    * contenido_didactico : TEXT ' Datos de trivias o preguntas del examen
+    * experiencia_otorgada : INT
+    * es_examen_ubicacion : BOOLEAN ' TRUE si la lección pertenece al test inicial
+    religion_restriccion : VARCHAR(100) ' NULL si es para todos, o específica (ej: "Catolicismo")
+}
+
+entity Tipo_de_Leccion {
+    * id_tipo_de_leccion : INT (PK)
+    --
+    * name : VARCHAR(128) ' Cámara, Trivia, Imitación, Examen Ubicación
+}
+
+entity Seña {
+    * id_seña : INT (PK)
+    --
+    * id_recurso : INT (FK)
+    * id_categoria : INT (FK)
+    * codigo_seña : INT
+    * significado : VARCHAR(128)
+}
+
+entity Categoria_Seña {
+    * id_categoria : INT (PK)
+    --
+    * nombre_area : VARCHAR(128) ' Matemáticas, Historia, Psicología, Religión...
+}
+
+entity Recurso {
+    * id_recurso : INT (PK)
+    --
+    * id_tipo_de_recurso : INT (FK)
+    * ruta_archivo : VARCHAR(255) ' URL del video, path del JSON 3D o SVG 2D
+}
+
+entity Tipo_de_Recursos {
+    * id_tipo_de_recurso : INT (PK)
+    --
+    * tipo : VARCHAR(128) ' video_real, animacion_3d, vector_2d
+}
+
+' --- RELACIONES CORREGIDAS (Muchos a la izquierda, Uno a la derecha) ---
+
+' Núcleo e Historial
+Usuario ||..|| Cuenta
+Progreso_Leccion }|..|| Cuenta
+Progreso_Leccion }|..|| Leccion
+Cuenta }|..|| Nivel
+
+' Estructura Educativa Escalar
+Seccion }|..|| Nivel
+Unidad }|..|| Seccion
+Grupo_Lecciones }|..|| Unidad
+Leccion }|..|| Grupo_Lecciones
+Leccion }|..|| Tipo_de_Leccion
+
+' Diccionario de Señas, Recursos Multimedia y Categorías
+Seña }|..|| Categoria_Seña
+Seña }|..|| Recurso
+Recurso }|..|| Tipo_de_Recursos
+
+@enduml

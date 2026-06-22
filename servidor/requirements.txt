@@ -1,1 +1,7 @@
-flask
+cs50
+Flask
+flask-cors
+flask-bcrypt
+flask-jwt-extended
+requests
+pyinstaller

@@ -1,29 +1,24 @@
-from flask import Flask
-import sqlite3
+from flask import Flask, jsonify
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+from routes.auth import auth_bp
 
 app = Flask(__name__)
+CORS(app)
+
+# Setup JWT
+app.config["JWT_SECRET_KEY"] = "plsv"  # ¡Cambia esto en producción!
+jwt = JWTManager(app)
+
+# REGISTRO DE BLUEPRINTS
+# Al registrarlo aquí, todas las rutas de auth.py heredarán el /api/v1 automáticamente
+app.register_blueprint(auth_bp)
 
 @app.route("/")
 def hello_world():
-    return "<p>¡Hola! El backend de mi proyecto LSV está funcionando.</p>"
-
-@app.route('/datos-lsv')
-def obtener_datos():
-    conn = sqlite3.connect('plsv.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    
-    # Ejemplo: trayendo las señas registradas
-    cursor.execute("SELECT * FROM señas") 
-    filas = cursor.fetchall()
-    
-    # Convertimos a lista de diccionarios para que Vite lo entienda como JSON
-    resultado = [dict(f) for f in filas]
-    
-    conn.close()
-    return jsonify(resultado)
+    return jsonify({"message": "PLSV Core Server Running Successfully"}), 200
 
 
 if __name__ == "__main__":
-    # Importante: host='0.0.0.0' permite que se conecte con el navegador de Android
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # host='0.0.0.0' se mantiene firme para tus pruebas con la cámara en Android
+    app.run(host='0.0.0.0', port=5000)

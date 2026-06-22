@@ -1,9 +1,7 @@
-<script setup lang="ts">
-import InicioView from './views/Inicio/InicioView.vue';
-
-
+<script setup>
+import HomeView from './views/Home/HomeView.vue';
 </script>
 
 <template>
-<InicioView/>
+<HomeView/>
 </template>
