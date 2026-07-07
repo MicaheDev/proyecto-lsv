@@ -1,3 +1,19 @@
+<script setup>
+
+
+</script>
+
+<template>
+  <div>
+    <h1>LSV</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, blanditiis?|</p>
+
+    <RouterLink to="/welcome">Empezar ahora</RouterLink>
+    <br>
+    <RouterLink to="/login">Ya tengo una cuenta</RouterLink>
+  </div>
+</template>
+<!--
 <template>
   <div class="carousel-container">
     <div ref="scrollRef" @scroll="handleScroll" class="carousel-track" style="scrollbar-width: none;">
@@ -238,3 +254,4 @@ const manejarSiguiente = () => {
   /* Efecto de click simulando amber-400 */
 }
 </style>
+-->

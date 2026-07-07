@@ -10,80 +10,129 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/v1')
 @auth_bp.route('/login', methods=["POST"])
 def login():
     if not request.is_json:
-        return jsonify({"error": "Bad Request", "msg": "Missing JSON in request"}), 400
+        return jsonify({"error": "Bad Request", "message": "Falta el JSON en la petición"}), 400
 
     username = request.json.get("username", None)
     password = request.json.get("password", None)
 
     if not username or not password:
-        return jsonify({"error": "Bad Request", "msg": "Username and password required"}), 400
+        return jsonify({"error": "Bad Request", "message": "Usuario y contraseña son obligatorios"}), 400
 
-    user_rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+    try:
+        # 1. Buscar al usuario por su username (Suelto, estilo CS50)
+        user_rows = db.execute("SELECT * FROM users WHERE username = ?", username)
 
-    if not user_rows:
-        return jsonify({"error": "Unauthorized", "msg": "Invalid username or password"}), 401
-    
-    user = user_rows[0]
+        if not user_rows:
+            return jsonify({"error": "Unauthorized", "message": "Usuario o contraseña incorrectos"}), 401
+        
+        user = user_rows[0]
 
-    if not bcrypt.check_password_hash(user["password"], password):
-        return jsonify({"error": "Unauthorized", "msg": "Invalid username or password"}), 401
-    
-    # Asegúrate de usar la columna exacta de tu DB (user_id o id)
-    access_token = create_access_token(identity=str(user["user_id"]))
-    
-    return jsonify({
-        "token": access_token,
-        "user": {
-            "user_id": user['user_id'],
-            "username": user['username'],
-            "role": user['role']
-        }
-    }), 200
+        # 2. Verificar si la contraseña coincide con el hash
+        if not bcrypt.check_password_hash(user["password"], password):
+            return jsonify({"error": "Unauthorized", "message": "Usuario o contraseña incorrectos"}), 401
+        
+        # 3. Generar el token de acceso JWT
+        access_token = create_access_token(identity=str(user["user_id"]))
+        
+        # 4. Responder con los datos correctos de la tabla
+        return jsonify({
+            "status": "success",
+            "message": "¡Inicio de sesión exitoso!",
+            "token": access_token,
+            "user": {
+                "user_id": user['user_id'],   
+                "username": user['username'],    
+                "full_name": user['full_name']
+            }
+        }), 200
 
+    except Exception as e:
+        print("Error en login:", str(e)) # Para que veas el desglose exacto en la consola si algo más falla
+        return jsonify({"error": "Internal Server Error", "message": "Ocurrió un error en el servidor."}), 500
 
 @auth_bp.route('/register', methods=["POST"])
 def register():
     if not request.is_json:
-        return jsonify({"error": "Bad Request", "msg": "Missing JSON in request"}), 400
+        return jsonify({"error": "Bad Request", "message": "Falta el JSON en la petición"}), 400
 
-    username = request.json.get("username", None)
-    password = request.json.get("password", None)
-    role = request.json.get("role", "user")
+    data = request.json
+    full_name = data.get("full_name")
+    username = data.get("username")
+    password = data.get("password")
+    preferences = data.get("preferences", {})
 
-    if not username or not password:
-        return jsonify({"error": "Bad Request", "msg": "Username and password required"}), 400
+    # Validación básica en el servidor
+    if not full_name or not username or not password:
+        return jsonify({"error": "Bad Request", "message": "Todos los campos son obligatorios"}), 400
 
     # 1. Verificar si el usuario ya existe
+    # Nota: Si tu objeto 'db' devuelve una lista, verificamos si tiene elementos
     existing_user = db.execute("SELECT * FROM users WHERE username = ?", username)
     if existing_user:
-        return jsonify({"error": "Conflict", "msg": "Username is already taken"}), 409
+        return jsonify({"error": "Conflict", "message": "El nombre de usuario ya está en uso"}), 409
 
     # 2. Generar el hash seguro de la contraseña
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     try:
-        # 3. Insertar nuevo registro
+        # Mapeo rápido de Strings del Frontend a IDs enteros de tus tablas SQL
+        # Esto asegura que si mandan datos por defecto, se guarden los IDs correctos
+        roles_map = {"admin": 1, "teacher": 2, "user": 3, "guest": 4, "community": 3}
+        levels_map = {"none": 1, "basic": 2, "intermediate": 3}
+        goals_map = {"5": 1, "10": 2, "20": 3}
+
+        # Obtenemos los IDs correspondientes basándonos en el payload de Vue
+        role_id = roles_map.get(preferences.get("role_id"), 3) # Por defecto 'user' (3)
+        lsv_level_id = levels_map.get(preferences.get("lsv_level_id"), 1) # Por defecto 'None' (1)
+        daily_goal_id = goals_map.get(preferences.get("daily_goal_id"), 2) # Por defecto '10 min' (2)
+        audio_mode = preferences.get("audio_mode", "full_audio")
+        
+        # SQLite guarda los booleanos como enteros (1 para True, 0 para False)
+        is_simplified = 1 if preferences.get("is_simplified") else 0
+
+        # 3. Insertar el usuario en la tabla 'users'
+        # Nota: Asegúrate de que tu wrapper de BD devuelva el ID del registro insertado (lastrowid)
         new_user_id = db.execute(
-            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-            username, hashed_password, role
+            "INSERT INTO users (full_name, username, password, role_id) VALUES (?, ?, ?, ?)",
+            full_name, 
+            username, 
+            hashed_password, 
+            role_id
+        )
+
+        # 4. Insertar las preferencias vinculadas al nuevo user_id
+        db.execute(
+            "INSERT INTO user_preferences (user_id, lsv_level_id, daily_goal_id, audio_mode, is_simplified) VALUES (?, ?, ?, ?, ?)",
+            new_user_id, 
+            lsv_level_id, 
+            daily_goal_id, 
+            audio_mode, 
+            is_simplified
+        )
+
+        # 5. Inicializar las estadísticas de juego (corazones, racha, puntaje) para el niño/usuario
+        db.execute(
+            "INSERT INTO user_game_stats (user_id, current_hearts, total_score, current_streak, max_hearts, last_activity_date) VALUES (?, 5, 0, 0, 5, CURRENT_DATE)",
+            new_user_id
         )
         
-        # 4. Generar el JWT de una vez para dejarlo logueado
+        # 6. Generar el JWT para dejarlo logueado de una vez
         access_token = create_access_token(identity=str(new_user_id))
         
         return jsonify({
             "status": "success",
-            "msg": "User registered successfully",
+            "message": "¡Usuario registrado con éxito!",
             "token": access_token,
             "user": {
                 "user_id": new_user_id,
                 "username": username,
-                "role": role
+                "full_name": full_name
             }
         }), 201
-    except Exception as e:
-        return jsonify({"error": "Internal Server Error", "msg": str(e)}), 500
 
+    except Exception as e:
+        print("Error en registro:", str(e)) # Para que lo veas en la consola de Flask
+        return jsonify({"error": "Internal Server Error", "message": "Ocurrió un error al guardar en la base de datos."}), 500
 
 @auth_bp.route("/protected", methods=["GET"])
 @jwt_required()
