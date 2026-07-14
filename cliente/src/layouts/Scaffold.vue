@@ -1,15 +1,21 @@
 <script setup>
+import { computed } from 'vue';
 import BottomNav from '../components/BottomNav.vue';
-import TopBar from '../components/TopBar.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+const activeTopBar = computed(() => route.meta.topBar);
+const shouldShowBottomNav = computed(() => route.meta.showBottomNav ?? false);
 </script>
 
 <template>
     <div class="c-container">
-        <TopBar />
+        <component :is="activeTopBar" v-if="activeTopBar" />
         <main class="c-content">
             <slot />
         </main>
-        <BottomNav />
+        <BottomNav v-if="shouldShowBottomNav" />
     </div>
 </template>
 
@@ -28,9 +34,6 @@ import TopBar from '../components/TopBar.vue';
 .c-content {
     width: 100%;
     height: 100%;
-
-    padding: 20px;
-
     overflow-y: auto;
 }
 </style>

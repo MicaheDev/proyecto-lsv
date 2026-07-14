@@ -15,7 +15,7 @@ const menu = [
   },
 
   {
-    path: "/comunity",
+    path: "/ranking",
     name: "Ranking",
     icon: PhRanking
   },

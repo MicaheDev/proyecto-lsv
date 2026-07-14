@@ -13,11 +13,11 @@ const form = reactive({
     confirmPassword: ""
 });
 
-let onboardingPreferences = {};
+let onboardingPreferences = ref({});
 
 onMounted(() => {
     const rawData = localStorage.getItem('temp_preferences_data');
-    onboardingPreferences = rawData ? JSON.parse(rawData) : {};
+    onboardingPreferences.value = rawData ? JSON.parse(rawData) : {};
 });
 
 async function handleOnSubmit() {
@@ -34,17 +34,17 @@ async function handleOnSubmit() {
         username: form.username,
         password: form.password,
         preferences: {
-            role_id: onboardingPreferences.relationship || "community",
-            lsv_level_id: onboardingPreferences.lsvLevel || "none",
-            daily_goal_id: onboardingPreferences.dailyGoal || "10",
-            audio_mode: onboardingPreferences.audioMode || "full_audio",
-            is_simplified: onboardingPreferences.uiAccessibility ? onboardingPreferences.uiAccessibility === 'simplified' : false
+            role_id: onboardingPreferences.value.relationship || "community",
+            level_preference: onboardingPreferences.value.lsvLevel || "None", // 'None' con N mayúscula igual que tu CHECK
+            daily_goal: parseInt(onboardingPreferences.value.dailyGoal) || 10, // Aseguramos que viaje como número
+            audio_mode: onboardingPreferences.value.audioMode || "full_audio",
+            is_simplified: onboardingPreferences.value.uiAccessibility ? onboardingPreferences.value.uiAccessibility === 'simplified' : false
         }
     };
 
     try {
         // 2. Fetch directo con Axios
-        const response = await axios.post("localhost:5000/api/v1/register", payload);
+        const response = await axios.post("http://127.0.0.1:5000/api/v1/register", payload);
 
         console.log("Registro exitoso:", response.data);
         const { token, user } = response.data
@@ -68,7 +68,7 @@ async function handleOnSubmit() {
 </script>
 
 <template>
-   <div class="c-container">
+   <div class="c-register-container">
      <form @submit.prevent="handleOnSubmit">
         <h1>Register</h1>
         <br>
@@ -102,7 +102,7 @@ async function handleOnSubmit() {
 </template>
 
 <style scoped>
-.c-container {
+.c-register-container {
     width: 100%;
     height: 100svh;
 

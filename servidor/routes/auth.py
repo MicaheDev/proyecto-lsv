@@ -21,7 +21,7 @@ def login():
     try:
         # 1. Buscar al usuario por su username (Suelto, estilo CS50)
         user_rows = db.execute("""SELECT u.user_id, u.username, u.password, u.full_name,
-                      s.current_hearts, s.max_hearts, s.total_score, s.current_streak
+                      s.current_level, s.current_hearts, s.max_hearts, s.total_score, s.current_streak
                FROM users u
                LEFT JOIN user_game_stats s ON u.user_id = s.user_id
                WHERE u.username = ?""", username)
@@ -49,6 +49,7 @@ def login():
                 "username": user['username'],    
                 "full_name": user['full_name'],
                 "stats": {
+                    "current_level": user["current_level"],
                     "current_hearts": user.get('current_hearts', 5),
                     "max_hearts": user.get('max_hearts', 5),
                     "total_score": user.get('total_score', 0),
@@ -86,19 +87,26 @@ def register():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     try:
-        # Mapeo rápido de Strings del Frontend a IDs enteros de tus tablas SQL
-        # Esto asegura que si mandan datos por defecto, se guarden los IDs correctos
-        roles_map = {"admin": 1, "teacher": 2, "user": 3, "guest": 4, "community": 3}
-        levels_map = {"none": 1, "basic": 2, "intermediate": 3}
-        goals_map = {"5": 1, "10": 2, "20": 3}
 
-        # Obtenemos los IDs correspondientes basándonos en el payload de Vue
-        role_id = roles_map.get(preferences.get("role_id"), 3) # Por defecto 'user' (3)
-        lsv_level_id = levels_map.get(preferences.get("lsv_level_id"), 1) # Por defecto 'None' (1)
-        daily_goal_id = goals_map.get(preferences.get("daily_goal_id"), 2) # Por defecto '10 min' (2)
-        audio_mode = preferences.get("audio_mode", "full_audio")
+       # El rol por defecto ahora es 3 ('USER' en tu tabla roles)
+        role_id = 3 
+
+        # ◄ .upper() convierte 'none' o 'basic' a 'NONE' o 'BASIC' para pasar el CHECK
+        raw_level = preferences.get("level_preference", "NONE")
+        level_pref = str(raw_level).upper() if raw_level else "NONE"
         
-        # SQLite guarda los booleanos como enteros (1 para True, 0 para False)
+        # ◄ .upper() convierte 'full_audio' o 'no_voice' a 'FULL_AUDIO' o 'NO_VOICE'
+        raw_audio = preferences.get("audio_mode", "FULL_AUDIO")
+        audio_mode = str(raw_audio).upper() if raw_audio else "FULL_AUDIO"
+
+        # Aseguramos que daily_goal sea entero y esté en los permitidos (5, 10, 20)
+        try:
+            daily_goal = int(preferences.get("daily_goal", 10))
+            if daily_goal not in [5, 10, 20]:
+                daily_goal = 10
+        except (ValueError, TypeError):
+            daily_goal = 10
+
         is_simplified = 1 if preferences.get("is_simplified") else 0
 
         # 3. Insertar el usuario en la tabla 'users'
@@ -113,20 +121,20 @@ def register():
 
         # 4. Insertar las preferencias vinculadas al nuevo user_id
         db.execute(
-            "INSERT INTO user_preferences (user_id, lsv_level_id, daily_goal_id, audio_mode, is_simplified) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO user_preferences (user_id, level_preference, daily_goal, audio_mode, is_simplified) VALUES (?, ?, ?, ?, ?)",
             new_user_id, 
-            lsv_level_id, 
-            daily_goal_id, 
+            level_pref, 
+            daily_goal, 
             audio_mode, 
             is_simplified
         )
 
         # 5. Inicializar las estadísticas de juego (corazones, racha, puntaje) para el niño/usuario
         db.execute(
-            "INSERT INTO user_game_stats (user_id, current_hearts, total_score, current_streak, max_hearts, last_activity_date) VALUES (?, 5, 0, 0, 5, CURRENT_DATE)",
+            """INSERT INTO user_game_stats (user_id, current_hearts, total_score, current_streak, max_hearts, last_activity_date) 
+               VALUES (?, 5, 0, 0, 5, CURRENT_DATE)""",
             new_user_id
         )
-        
         # 6. Generar el JWT para dejarlo logueado de una vez
         access_token = create_access_token(identity=str(new_user_id))
         
@@ -139,6 +147,7 @@ def register():
                 "username": username,
                 "full_name": full_name,
                 "stats": {
+                    "current_level": "A1",
                     "current_hearts": 5,
                     "max_hearts": 5,
                     "total_score": 0,

@@ -9,6 +9,11 @@ import RegisterView from "./views/RegisterView.vue";
 import WelcomeView from "./views/WelcomeView.vue";
 import LearnView from "./views/LearnView.vue";
 import Scaffold from "./layouts/Scaffold.vue";
+import ProfileView from "./views/ProfileView.vue";
+import StatusTopBar from "./components/StatusTopBar.vue";
+import NavTopBar from "./components/NavTopBar.vue";
+import SignsView from "./views/SignsView.vue";
+import RankingView from "./views/RankingView.vue";
 
 const routes = [
   { path: "/", component: HomeView },
@@ -19,7 +24,46 @@ const routes = [
     path: "/learn",
     name: "learn",
     component: LearnView,
-    meta: { layout: Scaffold, requiresAuth: true },
+    meta: {
+      layout: Scaffold,
+      requiresAuth: true,
+
+      topBar: StatusTopBar,
+      showBottomNav: true,
+    },
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ProfileView,
+    meta: {
+      layout: Scaffold,
+      requiresAuth: true,
+      showBottomNav: true,
+    },
+  },
+  {
+    path: "/signs",
+    name: "signs",
+    component: SignsView,
+    meta: {
+      layout: Scaffold,
+      requiresAuth: true,
+      topBar: StatusTopBar,
+      showBottomNav: true,
+    },
+  },
+
+  {
+    path: "/ranking",
+    name: "ranking",
+    component: RankingView,
+    meta: {
+      layout: Scaffold,
+      requiresAuth: true,
+      topBar: StatusTopBar,
+      showBottomNav: true,
+    },
   },
 ];
 
@@ -38,20 +82,23 @@ const router = createRouter({
 // =========================================================
 router.beforeEach((to, from, next) => {
   // 1. Revisamos si el usuario está autenticado (si existe el token)
-  const isAuthenticated = !!localStorage.getItem('user_data');
-  
+  const isAuthenticated = !!localStorage.getItem("user_data");
+
   // 2. Revisamos si la ruta a la que intenta ir requiere autenticación
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
   // CASO 1: Intenta ir a una ruta protegida (como /learn) pero no está logueado
   if (requiresAuth && !isAuthenticated) {
     // Lo rebotamos al Home principal
-    return next('/login'); 
+    return next("/login");
   }
 
   // CASO 2: Si ya está logueado e intenta ir al Login, Registro o Home, lo mandamos directo al módulo de aprendizaje
-  if (isAuthenticated && (to.path === '/login' || to.path === '/register' || to.path === '/')) {
-    return next('/learn');
+  if (
+    isAuthenticated &&
+    (to.path === "/login" || to.path === "/register" || to.path === "/")
+  ) {
+    return next("/learn");
   }
 
   // CASO 3: Si no cumple ninguna de las anteriores, lo dejamos pasar libremente

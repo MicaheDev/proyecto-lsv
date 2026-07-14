@@ -50,7 +50,7 @@ function handleNextStep(currentIndex, currentKey) {
 </script>
 
 <template>
-    <div class="c-container" v-if="!actualStep">
+    <div class="c-welcome-container" v-if="!actualStep">
         <h1>Bienvenido</h1>
         <br>
         <p>Te haremos 6 preguntas para personalizar tu experiencia.</p>
@@ -82,7 +82,7 @@ function handleNextStep(currentIndex, currentKey) {
 </template>
 
 <style scoped>
-.c-container {
+.c-welcome-container{
     width: 100%;
     height: 100svh;
 

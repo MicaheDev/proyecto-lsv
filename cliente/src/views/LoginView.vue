@@ -44,7 +44,7 @@ async function handleOnSubmit() {
 
 <template>
 
-    <div class="c-container">
+    <div class="c-login-container">
         <form @submit.prevent="handleOnSubmit">
 
         <h1>Login</h1>
@@ -67,7 +67,7 @@ async function handleOnSubmit() {
 </template>
 
 <style scoped>
-.c-container {
+.c-login-container{
     width: 100%;
     height: 100svh;
 

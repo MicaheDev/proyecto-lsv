@@ -22,7 +22,7 @@ onMounted(() => {
 <template>
     <div class="c-stats" v-if="user_data && user_data.user_info">
 
-        <span> Nivel Actual A1</span>
+        <span> Nivel {{ user_data.user_info.stats.current_level }}</span>
         <span>
             Racha {{ user_data.user_info.stats.current_streak }}
         </span>
