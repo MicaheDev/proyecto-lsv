@@ -2,13 +2,16 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from routes.auth import auth_bp
-
+from setup import setup
 app = Flask(__name__)
 CORS(app)
 
 # Setup JWT
 app.config["JWT_SECRET_KEY"] = "Proyecto-LSV"  # ¡Cambia esto en producción!
 jwt = JWTManager(app)
+
+# CREATE ADMIN USER
+setup()
 
 # REGISTRO DE BLUEPRINTS
 # Al registrarlo aquí, todas las rutas de auth.py heredarán el /api/v1 automáticamente

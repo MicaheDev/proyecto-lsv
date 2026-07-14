@@ -31,6 +31,7 @@ function logout() {
     <div class="c-profile-container" v-if="user_data && user_data.user_info">
 
         <span>{{ user_data.user_info.username }}</span>
+        <span>{{ user_data.user_info.role }}</span>
         <span>{{ user_data.user_info.full_name }}</span>
         <span>{{ user_data.user_info.stats.current_level }}</span>
         <br>

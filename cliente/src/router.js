@@ -11,9 +11,13 @@ import LearnView from "./views/LearnView.vue";
 import Scaffold from "./layouts/Scaffold.vue";
 import ProfileView from "./views/ProfileView.vue";
 import StatusTopBar from "./components/StatusTopBar.vue";
-import NavTopBar from "./components/NavTopBar.vue";
 import SignsView from "./views/SignsView.vue";
 import RankingView from "./views/RankingView.vue";
+import BottomNav from "./components/BottomNav.vue";
+import AdminToBar from "./components/AdminToBar.vue";
+import AdminBottomNav from "./components/AdminBottomNav.vue";
+import DashboardView from "./views/manage/DashboardView.vue";
+import axios from "axios";
 
 const routes = [
   { path: "/", component: HomeView },
@@ -21,58 +25,61 @@ const routes = [
   { path: "/register", component: RegisterView },
   { path: "/login", component: LoginView },
   {
-    path: "/learn",
-    name: "learn",
-    component: LearnView,
+    path: "/",
+    // El Scaffold actúa como el contenedor padre de este grupo de rutas
+    component: Scaffold,
     meta: {
-      layout: Scaffold,
-      requiresAuth: true,
-
-      topBar: StatusTopBar,
-      showBottomNav: true,
-    },
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    component: ProfileView,
-    meta: {
-      layout: Scaffold,
-      requiresAuth: true,
-      showBottomNav: true,
-    },
-  },
-  {
-    path: "/signs",
-    name: "signs",
-    component: SignsView,
-    meta: {
-      layout: Scaffold,
       requiresAuth: true,
       topBar: StatusTopBar,
-      showBottomNav: true,
+      bottomBar: BottomNav,
     },
+    children: [
+      {
+        path: "learn",
+        name: "Learn",
+        component: LearnView,
+      },
+      {
+        path: "signs",
+        name: "signs",
+        component: SignsView,
+      },
+      {
+        path: "ranking",
+        name: "ranking",
+        component: RankingView,
+      },
+      {
+        path: "profile",
+        name: "profile",
+        component: ProfileView,
+        meta: {
+          topBar: null,
+        },
+      },
+    ],
   },
-
   {
-    path: "/ranking",
-    name: "ranking",
-    component: RankingView,
+    path: "/manage",
+    name: "Manage",
+    component: Scaffold,
     meta: {
-      layout: Scaffold,
       requiresAuth: true,
-      topBar: StatusTopBar,
-      showBottomNav: true,
+      requiresAdmin: true,
+      topBar: AdminToBar,
+      bottomBar: AdminBottomNav,
     },
+    children: [
+      {
+        path: "/",
+        name: "Dashboard",
+        component: DashboardView,
+      },
+    ],
   },
 ];
 
 const router = createRouter({
-  // Note: We're using createMemoryHistory() here for compatibility
-  //       with the Playground. In a real application you'd usually
-  //       use createWebHistory() or createWebHashHistory() instead,
-  //       tying the route to the browser URL. See the documentation
-  //       for more information about history modes.
   history: createWebHistory(),
   routes,
 });
@@ -80,29 +87,56 @@ const router = createRouter({
 // =========================================================
 // 🛡️ EL GUARDÍAN DE NAVEGACIÓN (beforeEach)
 // =========================================================
-router.beforeEach((to, from, next) => {
-  // 1. Revisamos si el usuario está autenticado (si existe el token)
-  const isAuthenticated = !!localStorage.getItem("user_data");
+router.beforeEach(async (to, from, next) => {
+  const userDataRaw = localStorage.getItem("user_data");
+  const isAuthenticated = !!userDataRaw;
 
-  // 2. Revisamos si la ruta a la que intenta ir requiere autenticación
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
 
-  // CASO 1: Intenta ir a una ruta protegida (como /learn) pero no está logueado
+  // 1. Si la ruta requiere autenticación y no está logueado, al login.
   if (requiresAuth && !isAuthenticated) {
-    // Lo rebotamos al Home principal
     return next("/login");
   }
 
-  // CASO 2: Si ya está logueado e intenta ir al Login, Registro o Home, lo mandamos directo al módulo de aprendizaje
-  if (
-    isAuthenticated &&
-    (to.path === "/login" || to.path === "/register" || to.path === "/")
-  ) {
+  // 2. Si ya está logueado e intenta ir a Login/Register/Home, redirigir según su rol guardado localmente
+  if (isAuthenticated && (to.path === "/login" || to.path === "/register" || to.path === "/")) {
+    try {
+      const parsedData = JSON.parse(userDataRaw);
+      // Asumiendo que al hacer login guardas el rol como 'ADMIN' o 'USER'
+      if (parsedData.user_info?.role === "ADMIN") {
+        return next("/manage");
+      }
+    } catch (e) {
+      console.error("Error leyendo user_data local", e);
+    }
     return next("/learn");
   }
 
-  // CASO 3: Si no cumple ninguna de las anteriores, lo dejamos pasar libremente
+  // 3. Proteger la zona de administración consultando al servidor Flask en tiempo real
+  if (requiresAdmin) {
+    try {
+      const parsedData = JSON.parse(userDataRaw);
+      const token = parsedData?.token;
+
+      // Hacemos un GET e inyectamos el Bearer Token para pasar el @jwt_required()
+      const response = await axios.get("http://127.0.0.1:5000/api/v1/verify", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const { user } = response.data;
+
+      // Si el rol no es 1 (ADMIN), lo rebotamos al ecosistema de estudiante
+      if (user.role_id !== 1) {
+        alert("⚠️ Acceso denegado: No tienes permisos de administrador.");
+        return next("/learn");
+      }
+    } catch (error) {
+      console.error("Error en la verificación de administrador:", error);
+      return next("/login"); // Si el token expiró o falló, directo al login
+    }
+  }
+
   next();
 });
-
 export default router;

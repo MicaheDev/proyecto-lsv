@@ -15,7 +15,6 @@ onMounted(() => {
             user_data.value = null;
         }
     }
-    // Si no hay rawData, user_data se queda siendo null automáticamente
 });
 </script>
 

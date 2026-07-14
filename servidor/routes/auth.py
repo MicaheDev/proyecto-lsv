@@ -20,9 +20,10 @@ def login():
 
     try:
         # 1. Buscar al usuario por su username (Suelto, estilo CS50)
-        user_rows = db.execute("""SELECT u.user_id, u.username, u.password, u.full_name,
+        user_rows = db.execute("""SELECT u.user_id, u.username, u.password, u.full_name, r.role_name,
                       s.current_level, s.current_hearts, s.max_hearts, s.total_score, s.current_streak
                FROM users u
+               LEFT JOIN roles r ON u.role_id = r.role_id 
                LEFT JOIN user_game_stats s ON u.user_id = s.user_id
                WHERE u.username = ?""", username)
 
@@ -48,6 +49,7 @@ def login():
                 "user_id": user['user_id'],   
                 "username": user['username'],    
                 "full_name": user['full_name'],
+                "role": user["role_name"],
                 "stats": {
                     "current_level": user["current_level"],
                     "current_hearts": user.get('current_hearts', 5),
@@ -146,6 +148,7 @@ def register():
                 "user_id": new_user_id,
                 "username": username,
                 "full_name": full_name,
+                "role": "USER",
                 "stats": {
                     "current_level": "A1",
                     "current_hearts": 5,
@@ -160,22 +163,28 @@ def register():
         print("Error en registro:", str(e)) # Para que lo veas en la consola de Flask
         return jsonify({"error": "Internal Server Error", "message": "Ocurrió un error al guardar en la base de datos."}), 500
 
-@auth_bp.route("/protected", methods=["GET"])
+@auth_bp.route("/verify", methods=["GET"])
 @jwt_required()
 def protected():
     current_user_id = get_jwt_identity()
     
-    user_rows = db.execute("SELECT username, role FROM users WHERE user_id = ?", current_user_id)
-    if not user_rows:
-        return jsonify({"error": "Unauthorized", "msg": "User no longer exists"}), 401
+    try:
+        user_rows = db.execute("SELECT username, role_id FROM users WHERE user_id = ?", current_user_id)
+        if not user_rows:
+            return jsonify({"error": "Unauthorized", "msg": "User no longer exists"}), 401
+            
+        user = user_rows[0]
         
-    user = user_rows[0]
+        return jsonify({
+            "status": "success",
+            "message": "¡Inicio de sesión exitoso!",
+            "user": {
+                "user_id": current_user_id,
+                "username": user["username"],
+                "role_id": user["role_id"]
+            }
+        }), 200
     
-    return jsonify({
-        "status": "success",
-        "logged_in_as": {
-            "user_id": current_user_id,
-            "username": user["username"],
-            "role": user["role"]
-        }
-    }), 200
+    except Exception as e:
+        print("Error en registro:", str(e)) # Para que lo veas en la consola de Flask
+        return jsonify({"error": "Internal Server Error", "message": "Ocurrió un error al guardar en la base de datos."}), 500

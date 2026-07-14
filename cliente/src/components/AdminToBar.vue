@@ -15,9 +15,7 @@ function goBack() {
 
 <template>
   <nav class="c-nav">
-    <button class="back-btn" @click="goBack" aria-label="Volver atrás">
-      Volver
-    </button>
+    <h2>LinguSeñas - Administrar</h2>
   </nav>
 </template>
 

@@ -2,7 +2,7 @@
 
 const menu = [
   {
-    path: "/learn",
+    path: "/manage",
     name: "Inicio",
   },
 
@@ -12,12 +12,12 @@ const menu = [
   },
 
   {
-    path: "/ranking",
-    name: "Ranking",
+    path: "/lessons",
+    name: "Lecciones",
   },
   {
-    path: "/profile",
-    name: "Perfil",
+    path: "/users",
+    name: "Usuarios",
   }
 ]
 

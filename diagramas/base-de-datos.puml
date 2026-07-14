@@ -2,28 +2,43 @@
 skinparam roundcorner 5
 skinparam linetype ortho
 
+entity Rol {
+    * id_rol : INT (PK)
+    --
+    * nombre_rol : VARCHAR(30)
+}
+
+
 entity Usuario {
     * id_usuario : INT (PK)
     --
-    * cedula : VARCHAR(128)
-    * contraseña : VARCHAR(256)
-    * rol : VARCHAR(50)
+    * nombre_completo : VARCHAR(100)
+    * username: VARCHAR(30)
+    * contraseña : VARCHAR(255)
+    * id_rol : INT (FK)
 }
 
-entity Cuenta {
-    * id_cuenta : INT (PK)
+entity Preferencias_Usuario {
+    * id_usuario : INT (PK)
     --
-    * id_usuario : INT (FK)
-    * id_nivel_actual : INT (FK)
-    * vidas : INT
-    ultima_vida_perdida : DATETIME
-    * experiencia_total : INT
-    * fecha_de_creacion : DATE
-    ' --- Ajustes de Personalización e Inclusión ---
-    * nivel_dificultad_elegido : VARCHAR(50) ' Fácil, Medio, Difícil
-    * ajuste_autismo_interfaz : BOOLEAN ' Cambia paleta de colores/estímulos
-    religion_usuario : VARCHAR(100) ' Para filtrado de contenido sensible
+    * nivel_elegido : VARCHAR(20) 'Ninguno, Basico, Intermedio, '
+    * objetivo_diario: INT
+    * modo_audio: VARCHAR(20) 'Audio, Sin_voces, Muteado'
+    * ui_simple: BOOLEAN
 }
+
+entity Stats_Usuario {
+    * id_usuario : INT (FK)
+    --
+    * nivel_actual : VARCHAR(2) 'A1, A2, B1, B2, C1, C2'
+    * vidas_actuales : INT
+    * puntos_totales : INT
+    * racha_actual : INT
+    * vidas_maximas: INT
+    * fecha_ultima_actividad: DATETIME
+    * ui_simple: BOOLEAN
+}
+
 
 entity Progreso_Leccion {
     * id_cuenta : INT (PK, FK)
@@ -31,14 +46,6 @@ entity Progreso_Leccion {
     --
     * completado : BOOLEAN
     * fecha_completado : DATETIME
-}
-
-entity Nivel {
-    * id_nivel : INT (PK)
-    --
-    * codigo : VARCHAR(10) ' A1, A2, etc.
-    * name : VARCHAR(128)
-    * experiencia_requerida : INT
 }
 
 entity Seccion {
@@ -87,27 +94,20 @@ entity Seña {
     --
     * id_recurso : INT (FK)
     * id_categoria : INT (FK)
-    * codigo_seña : INT
     * significado : VARCHAR(128)
 }
 
-entity Categoria_Seña {
+entity Categoria {
     * id_categoria : INT (PK)
     --
-    * nombre_area : VARCHAR(128) ' Matemáticas, Historia, Psicología, Religión...
+    * nombre_categoria : VARCHAR(128) ' Matemáticas, Historia, Psicología, Religión...
 }
 
 entity Recurso {
     * id_recurso : INT (PK)
     --
-    * id_tipo_de_recurso : INT (FK)
-    * ruta_archivo : VARCHAR(255) ' URL del video, path del JSON 3D o SVG 2D
-}
-
-entity Tipo_de_Recursos {
-    * id_tipo_de_recurso : INT (PK)
-    --
-    * tipo : VARCHAR(128) ' video_real, animacion_3d, vector_2d
+    * tipo_de_recurso : VARCHAR(100) 'Video, Animacion_2D, Animacion_3D, Estatico'
+    * contenido_recurso : BOB
 }
 
 ' --- RELACIONES CORREGIDAS (Muchos a la izquierda, Uno a la derecha) ---

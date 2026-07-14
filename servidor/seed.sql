@@ -47,3 +47,30 @@ CREATE TABLE
         last_activity_date DATE NULLABLE,
         FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
     );
+
+CREATE TABLE
+    IF NOT EXISTS signs (
+        sign_id INTEGER PRIMARY KEY,
+        meaning VARCHAR(100) NOT NULL,
+        category_id INTEGER,
+        resource_id INTEGER,
+        FOREIGN KEY (category_id) REFERENCES categories (category_id) ON DELETE CASCADE,
+        FOREIGN KEY (resource_id) REFERENCES resources (resource_id) ON DELETE CASCADE
+    );
+
+CREATE TABLE
+    IF NOT EXISTS categories (
+        category_id INTEGER PRIMARY KEY,
+        category_name VARCHAR(100)
+    );
+
+CREATE TABLE 
+    IF NOT EXISTS resources (
+        resource_id INTEGER PRIMARY KEY,
+        resource_type VARCHAR(100) NOT NULL DEFAULT 'VIDEO' CHECK (
+            resource_type IN ('VIDEO', '2D_ANIMATION', '3D_ANIMATION', 'STATIC')
+        ),
+        resource_content BLOB NOT NULL 
+    );
+
+

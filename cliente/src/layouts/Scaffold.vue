@@ -6,16 +6,16 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const activeTopBar = computed(() => route.meta.topBar);
-const shouldShowBottomNav = computed(() => route.meta.showBottomNav ?? false);
+const activeBottomBar = computed(() => route.meta.bottomBar);
 </script>
 
 <template>
     <div class="c-container">
         <component :is="activeTopBar" v-if="activeTopBar" />
         <main class="c-content">
-            <slot />
+            <RouterView />
         </main>
-        <BottomNav v-if="shouldShowBottomNav" />
+        <component :is="activeBottomBar" v-if="activeBottomBar" />
     </div>
 </template>
 
