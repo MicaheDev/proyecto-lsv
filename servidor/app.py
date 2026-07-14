@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Setup JWT
-app.config["JWT_SECRET_KEY"] = "plsv"  # ¡Cambia esto en producción!
+app.config["JWT_SECRET_KEY"] = "Proyecto-LSV"  # ¡Cambia esto en producción!
 jwt = JWTManager(app)
 
 # REGISTRO DE BLUEPRINTS

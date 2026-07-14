@@ -1,18 +1,35 @@
-<script setup>
-
-
-</script>
-
 <template>
-  <div>
+  <div class="c-container">
     <h1>LSV</h1>
+    <br>
     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, blanditiis?|</p>
-
+    <br>
     <RouterLink to="/welcome">Empezar ahora</RouterLink>
     <br>
     <RouterLink to="/login">Ya tengo una cuenta</RouterLink>
   </div>
 </template>
+
+<style scoped>
+.c-container {
+  width: 100%;
+  height: 100svh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+p {
+  max-width: 80%;
+  text-align: center;
+}
+</style>
 <!--
 <template>
   <div class="carousel-container">

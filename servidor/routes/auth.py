@@ -20,7 +20,11 @@ def login():
 
     try:
         # 1. Buscar al usuario por su username (Suelto, estilo CS50)
-        user_rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+        user_rows = db.execute("""SELECT u.user_id, u.username, u.password, u.full_name,
+                      s.current_hearts, s.max_hearts, s.total_score, s.current_streak
+               FROM users u
+               LEFT JOIN user_game_stats s ON u.user_id = s.user_id
+               WHERE u.username = ?""", username)
 
         if not user_rows:
             return jsonify({"error": "Unauthorized", "message": "Usuario o contraseña incorrectos"}), 401
@@ -31,8 +35,9 @@ def login():
         if not bcrypt.check_password_hash(user["password"], password):
             return jsonify({"error": "Unauthorized", "message": "Usuario o contraseña incorrectos"}), 401
         
+        user_id = user["user_id"]
         # 3. Generar el token de acceso JWT
-        access_token = create_access_token(identity=str(user["user_id"]))
+        access_token = create_access_token(identity=str(user_id))
         
         # 4. Responder con los datos correctos de la tabla
         return jsonify({
@@ -42,7 +47,13 @@ def login():
             "user": {
                 "user_id": user['user_id'],   
                 "username": user['username'],    
-                "full_name": user['full_name']
+                "full_name": user['full_name'],
+                "stats": {
+                    "current_hearts": user.get('current_hearts', 5),
+                    "max_hearts": user.get('max_hearts', 5),
+                    "total_score": user.get('total_score', 0),
+                    "current_streak": user.get('current_streak', 0)
+                }
             }
         }), 200
 
@@ -126,7 +137,13 @@ def register():
             "user": {
                 "user_id": new_user_id,
                 "username": username,
-                "full_name": full_name
+                "full_name": full_name,
+                "stats": {
+                    "current_hearts": 5,
+                    "max_hearts": 5,
+                    "total_score": 0,
+                    "current_streak": 0
+                }
             }
         }), 201
 

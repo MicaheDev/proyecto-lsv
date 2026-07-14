@@ -50,21 +50,22 @@ function handleNextStep(currentIndex, currentKey) {
 </script>
 
 <template>
-    <div v-if="!actualStep">
+    <div class="c-container" v-if="!actualStep">
         <h1>Bienvenido</h1>
+        <br>
         <p>Te haremos 6 preguntas para personalizar tu experiencia.</p>
-
+        <br>
         <RouterLink :to="'/welcome?welcomeStep=' + steps[0]">Siguiente</RouterLink>
     </div>
 
-    <div v-for="([key, value], i) in Object.entries(questionary)" :key="key">
+    <div  v-for="([key, value], i) in Object.entries(questionary)" :key="key">
 
-        <div v-if="actualStep === key">
+        <div class="c-container" v-if="actualStep === key">
             <form @submit.prevent="handleNextStep(i, key)">
                 <h3>
                     {{ value.question }}
                 </h3>
-
+                <br>
                 <div v-for="option in value.options" :key="option.value">
                     <label>
                         <input type="radio" :name="key" :value="option.value" v-model="userResponses[key]" required>
@@ -72,10 +73,33 @@ function handleNextStep(currentIndex, currentKey) {
                         {{ option.label }}
                     </label>
                 </div>
-
+                <br>
                 <button type="submit">Siguiente</button>
             </form>
         </div>
     </div>
 
 </template>
+
+<style scoped>
+.c-container {
+    width: 100%;
+    height: 100svh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+p {
+    max-width: 80%;
+    text-align: center;
+}
+
+button {
+    padding: 20px;
+}
+</style>

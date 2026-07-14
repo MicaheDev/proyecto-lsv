@@ -45,9 +45,14 @@ async function handleOnSubmit() {
     try {
         // 2. Fetch directo con Axios
         const response = await axios.post("localhost:5000/api/v1/register", payload);
-        
+
         console.log("Registro exitoso:", response.data);
-        localStorage.setItem('has_account', 'true');
+        const { token, user } = response.data
+        const user_data = {
+            token: token,
+            user_info: user
+        }
+        localStorage.setItem('user_data', JSON.stringify(user_data))
         localStorage.removeItem('temp_preferences_data');
         router.push('/learn');
 
@@ -63,32 +68,67 @@ async function handleOnSubmit() {
 </script>
 
 <template>
-    <form @submit.prevent="handleOnSubmit">
+   <div class="c-container">
+     <form @submit.prevent="handleOnSubmit">
         <h1>Register</h1>
         <br>
-        
+
         <label for="full_name">Nombre completo</label><br>
         <input type="text" id="full_name" v-model="form.fullName" minlength="3" required placeholder="Pedro Pérez"><br>
         <br>
-        
+
         <label for="username">Nombre de usuario</label><br>
-        <input type="text" id="username" v-model="form.username" minlength="4" pattern="^\S+$" title="No se permiten espacios" required placeholder="pedrito20"><br>
+        <input type="text" id="username" v-model="form.username" minlength="4" pattern="^\S+$"
+            title="No se permiten espacios" required placeholder="pedrito20"><br>
         <br>
-        
+
         <label for="password">Contraseña</label><br>
         <input type="password" id="password" v-model="form.password" minlength="4" required placeholder="••••"><br>
         <br>
-        
+
         <label for="confirm-password">Confirmar Contraseña</label><br>
         <input type="password" id="confirm-password" v-model="form.confirmPassword" required placeholder="••••"><br>
         <br>
-        
+
         <button type="submit" :disabled="isLoading">
             {{ isLoading ? 'Registrando...' : 'Registrarse e Ingresar' }}
         </button>
     </form>
 
     <br>
-        <RouterLink to="login">Ya tengo una cuenta</RouterLink>
+    <RouterLink to="login">Ya tengo una cuenta</RouterLink>
 
+   </div>
 </template>
+
+<style scoped>
+.c-container {
+    width: 100%;
+    height: 100svh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+form {
+    width: 100%;
+}
+
+input {
+    width: 100%;
+    padding: 10px 8px;
+}
+
+button {
+    width: 100%;
+    padding: 20px;
+}
+</style>
