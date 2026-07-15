@@ -7,7 +7,7 @@ function goBack() {
   if (window.history.length > 1) {
     router.back();
   } else {
-    router.push('/learn'); // Ruta segura de escape
+    router.push('/profile'); // Ruta segura de escape
   }
 }
 
@@ -15,6 +15,7 @@ function goBack() {
 
 <template>
   <nav class="c-nav">
+  <button  v-on:click="goBack">Volver</button>
     <h2>LinguSeñas - Administrar</h2>
   </nav>
 </template>

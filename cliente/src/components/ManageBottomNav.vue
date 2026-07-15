@@ -5,20 +5,10 @@ const menu = [
     path: "/manage",
     name: "Inicio",
   },
-
   {
-    path: "/signs",
-    name: "Señas",
+    path: "/studio",
+    name: "Estudio",
   },
-
-  {
-    path: "/lessons",
-    name: "Lecciones",
-  },
-  {
-    path: "/users",
-    name: "Usuarios",
-  }
 ]
 
 </script>

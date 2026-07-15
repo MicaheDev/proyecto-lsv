@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 const router = useRouter();
 
 // 1. Lo inicializamos estrictamente en null
@@ -34,6 +34,11 @@ function logout() {
         <span>{{ user_data.user_info.role }}</span>
         <span>{{ user_data.user_info.full_name }}</span>
         <span>{{ user_data.user_info.stats.current_level }}</span>
+        <br>
+        <div v-if="user_data.user_info.role == 'ADMIN'">
+        <RouterLink to="/manage">Administrar</RouterLink>
+        <RouterLink to="/studio">Studio</Routerlink>
+        </div>
         <br>
         <button v-on:click="logout">Cerrar Sesión</button>
     </div>

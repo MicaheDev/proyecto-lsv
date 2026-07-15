@@ -14,9 +14,9 @@ import StatusTopBar from "./components/StatusTopBar.vue";
 import SignsView from "./views/SignsView.vue";
 import RankingView from "./views/RankingView.vue";
 import BottomNav from "./components/BottomNav.vue";
-import AdminToBar from "./components/AdminToBar.vue";
-import AdminBottomNav from "./components/AdminBottomNav.vue";
 import DashboardView from "./views/manage/DashboardView.vue";
+import ManageTopBar from "./components/ManageTopBar.vue";
+import ManageBottomNav from "./components/ManageBottomNav.vue";
 import axios from "axios";
 
 const routes = [
@@ -66,8 +66,26 @@ const routes = [
     meta: {
       requiresAuth: true,
       requiresAdmin: true,
-      topBar: AdminToBar,
-      bottomBar: AdminBottomNav,
+      topBar: ManageTopBar,
+      bottomBar: ManageBottomNav,
+    },
+    children: [
+      {
+        path: "/",
+        name: "Dashboard",
+        component: DashboardView,
+      },
+    ],
+  },
+  {
+    path: "/studio",
+    name: "studio",
+    component: Scaffold,
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      topBar: ManageTopBar,
+      bottomBar: ManageBottomNav,
     },
     children: [
       {
