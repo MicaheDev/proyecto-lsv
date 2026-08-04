@@ -1,5 +1,5 @@
 <template>
-    <div class="c-learn-container">
+    <div class="p-6">
         <h1>Bienvenido</h1>
         <br>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus labore nisi soluta impedit vel dolore sapiente
@@ -57,9 +57,3 @@
             iste delectus possimus. Eveniet totam iure consequuntur fugiat eligendi!</p>
     </div>
 </template>
-
-<style scoped>
-.c-learn-container{
-    padding: 20px;
-}
-</style>

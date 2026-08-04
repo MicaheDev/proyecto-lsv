@@ -19,36 +19,18 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="c-stats" v-if="user_data && user_data.user_info">
-
+    <header class="w-full h-20 flex shrink-0 justify-between items-center px-6 border-b"
+        v-if="user_data && user_data.user_info">
         <span> Nivel {{ user_data.user_info.stats.current_level }}</span>
         <span>
             Racha {{ user_data.user_info.stats.current_streak }}
         </span>
-
         <span>
             Puntos {{ user_data.user_info.stats.total_score }}
         </span>
-
         <span>
             Vidas {{ user_data.user_info.stats.current_hearts }}
         </span>
-
-    </div>
+    </header>
 </template>
 
-<style scoped>
-.c-stats {
-    flex-shrink: 0;
-
-    width: 100%;
-    height: 80px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-inline: 20px;
-
-    border-bottom: 1px solid black;
-}
-</style>

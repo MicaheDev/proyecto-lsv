@@ -28,7 +28,7 @@ async function handleOnSubmit() {
             user_info: user
         }
         localStorage.setItem('user_data', JSON.stringify(user_data))
-        router.push('/learn');
+        router.push('/learning');
 
     } catch (error) {
         console.error("Error al registrar:", error);

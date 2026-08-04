@@ -5,12 +5,16 @@ import {
 
 import { authGuard } from "@/core/guards/authGuard";
 import { authRoutes } from "@/modules/auth";
-import { onboardingRoutes } from "./modules/onboarding";
-import { learningRoutes } from "./modules/learning";
+import { onboardingRoutes } from "@/modules/onboarding";
+import { learningRoutes } from "@/modules/learning";
+import { socialRoutes } from "@/modules/social";
+import { dictionaryRoutes } from "@/modules/dictionary";
 const routes = [
   ...onboardingRoutes,
   ...authRoutes,
-  ...learningRoutes
+  ...learningRoutes,
+  ...socialRoutes,
+  ...dictionaryRoutes
 ];
 
 const router = createRouter({

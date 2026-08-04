@@ -12,7 +12,7 @@ export async function authGuard(to, from, next) {
   }
 
   if (isAuthenticated && ["Login", "Register", "Home"].includes(to.name)) {
-    return next({ name: "Learn" });
+    return next({ name: "Learnning" });
   }
 
   if (requiresAdmin) {
@@ -23,7 +23,7 @@ export async function authGuard(to, from, next) {
       });
 
       if (response.data.user.role_id !== 1) {
-        return next({ name: "Learn" });
+        return next({ name: "Learning" });
       }
     } catch {
       return next({ name: "Login" });

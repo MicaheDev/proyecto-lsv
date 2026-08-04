@@ -54,7 +54,7 @@ async function handleOnSubmit() {
         }
         localStorage.setItem('user_data', JSON.stringify(user_data))
         localStorage.removeItem('temp_preferences_data');
-        router.push('/learn');
+        router.push('/learning');
 
     } catch (error) {
         console.error("Error al registrar:", error);
