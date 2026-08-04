@@ -26,15 +26,7 @@ const menu = [
 
 <template>
 
-  <nav class="c-nav">
 
-    <RouterLink v-for="el in menu" :key="el.name" :to="el.path">
-
-      <span>{{ el.name }}</span>
-
-    </RouterLink>
-
-  </nav>
 
 </template>
 
