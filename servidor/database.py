@@ -1,3 +1,4 @@
-from cs50 import SQL
+# database.py
+from flask_sqlalchemy import SQLAlchemy
 
-db = SQL("sqlite:///plsv.db")
+db = SQLAlchemy()
