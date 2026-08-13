@@ -12,7 +12,7 @@ export async function authGuard(to, from, next) {
   }
 
   if (isAuthenticated && ["Login", "Register", "Home"].includes(to.name)) {
-    return next({ name: "Learnning" });
+    return next({ name: "Learning" });
   }
 
   if (requiresAdmin) {
