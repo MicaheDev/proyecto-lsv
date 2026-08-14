@@ -53,14 +53,50 @@ def me():
         return jsonify({"error": "Internal Server Error", "message": "Ocurrió un error en el servidor."}), 500
 
 
-@users_bp.route('/me/preferences', methods=["POST"])
+@users_bp.route('/me/preferences', methods=["PUT"])
 @jwt_required()
 def update_preferences():
-    current_user_id = get_jwt_identity()
-    try:
+    if not request.is_json:
+        return jsonify({"error": "Bad Request", "message": "Falta el JSON en la petición"}), 400
 
-        print("hello")
-        
+    data = request.json
+    level = data.get("level_preference")
+    daily_goal = data.get("daily_goal")
+    audio_mode = data.get("audio_mode")
+
+    if not level or not daily_goal or audio_mode is None:
+        return jsonify({"error": "Bad Request", "message": "Todos los campos son obligatorios"}), 400
+
+    current_user_id = get_jwt_identity()
+
+    try:
+        current_preferences = db.session.query(UserPreference).filter(UserPreference.user_id == current_user_id).first()
+        if current_preferences:
+            # 2. EDITAR: Asignar los nuevos valores a las propiedades del objeto
+            current_preferences.level_preference = level
+            current_preferences.daily_goal = daily_goal
+            current_preferences.audio_mode = audio_mode
+        else:
+            # Opción adicional: Si no existen, las crea
+            current_preferences = UserPreference(
+                user_id=current_user_id,
+                level_preference=level,
+                daily_goal=daily_goal,
+                audio_mode=audio_mode
+            )
+            db.session.add(current_preferences)
+
+        # 3. Guardar los cambios en la base de datos
+        db.session.commit()
+
+        return jsonify({
+            "message": "Preferencias actualizadas correctamente",
+            "data": {
+                "level_preference": current_preferences.level_preference,
+                "daily_goal": current_preferences.daily_goal,
+                "audio_mode": current_preferences.audio_mode
+            }
+        }), 200
 
     except Exception as e:
         print("Error en verificación:", str(e))
