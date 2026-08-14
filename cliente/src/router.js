@@ -9,6 +9,7 @@ import { onboardingRoutes } from "@/modules/onboarding";
 import { learningRoutes } from "@/modules/learning";
 import { socialRoutes } from "@/modules/social";
 import { dictionaryRoutes } from "@/modules/dictionary";
+
 const routes = [
   ...onboardingRoutes,
   ...authRoutes,
