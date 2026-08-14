@@ -100,13 +100,13 @@ CREATE TABLE
     );
     
 CREATE TABLE 
-    IF NOT EXISTS exercise_types (
-    exercise_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    exercise_type_name VARCHAR(100) NOT NULL
+    IF NOT EXISTS challenge_types (
+    challenge_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challenge_type_name VARCHAR(100) NOT NULL
 );
 
 INSERT INTO 
-exercise_types (exercise_type_name) 
+challenge_types (challenge_type_name) 
 VALUES
     ('DEMO'),
     ('QUIZ_MULTIPLE'),
@@ -116,14 +116,14 @@ VALUES
     ('FREE_PRACTICE');
     
 CREATE TABLE
-    IF NOT EXISTS exercises (
-        exercise_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    IF NOT EXISTS challenges (
+        challenge_id INTEGER PRIMARY KEY AUTOINCREMENT,
         lesson_id INTEGER,
-        exercise_type_id INTEGER,
+        challenge_type_id INTEGER,
         question VARCHAR(100) NOT NULL,
         sign_id INTEGER,
         FOREIGN KEY (lesson_id) REFERENCES lessons (lesson_id) ON DELETE CASCADE,
-        FOREIGN KEY (exercise_type_id) REFERENCES exercise_types (exercise_type_id) ON DELETE CASCADE,
+        FOREIGN KEY (challenge_type_id) REFERENCES cahllenge_types (challenge_type_id) ON DELETE CASCADE,
         FOREIGN KEY (sign_id) REFERENCES signs (sign_id) ON DELETE CASCADE
     );
 

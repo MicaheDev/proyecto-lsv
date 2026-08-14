@@ -1,6 +1,6 @@
 from database import db
 # 1. Importas las cosas directamente de sqlalchemy:
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, CheckConstraint, text, event
+from sqlalchemy import Column, Integer, LargeBinary,String, Date, ForeignKey, CheckConstraint, text, event
 
 # 2. Tu código queda súper limpio y con AUTOCOMPLETADO TOTAL:
 class Role(db.Model):
@@ -69,6 +69,7 @@ class UserPreference(db.Model):
         ),
     )
 
+
 class UserGameStats(db.Model):
     __tablename__ = "user_game_stats"
     user_id = Column(ForeignKey('users.id'), primary_key=True)
@@ -98,5 +99,72 @@ class Node(db.Model):
     title = Column(String(100), nullable=False)
     unit_id = Column(ForeignKey('units.id'))
     position = Column(Integer, nullable=False)
+
+class Lesson(db.Model):
+    __tablename__ = "lessons"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(ForeignKey('nodes.id'))
+    required_exp = Column(Integer, nullable=False)
+
+class ChallengeType(db.Model):
+    __tablename__ = "challenge_types"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    type_name = Column(String(100), nullable=False)
+
+@event.listens_for(ChallengeType.__table__, 'after_create')
+def insert_initial_challenge_types(target, connection, **kw):
+    connection.execute(
+        target.insert(),
+        [
+            {'type_name': 'DEMO'},
+            {'type_name': 'QUIZ_MULTIPLE'},
+            {'type_name': 'REVERSE_QUIZ'},
+            {'type_name': 'MATCHING'},
+            {'type_name': 'CAM_VERIFY'},
+            {'type_name': 'FREE_PRACTICE'},
+        ]
+    )
+
+class Challenge(db.Model):
+    __tablename__ = "challenges"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    lesson_id = Column(ForeignKey('lessons.id'))
+    challenge_type_id = Column(ForeignKey('challenge_types.id'))
+    question = Column(String(100), nullable=False)
+    sign_id = Column(ForeignKey('signs.id'))
+
+class Sign(db.Model):
+    __tablename__ = "signs"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    meaning = Column(String(100), nullable=False)
+    category_id = Column(ForeignKey('categories.id'))
+    resource_id = Column(ForeignKey('resources.id'))
+
+class Category(db.Model):
+    __tablename__ = "categories"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    category_name = Column(String(100), nullable=False)
+
+class ResourceType(db.Model):
+    __tablename__ = "resource_types"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    type_name = Column(String(100), nullable=False) 
+
+@event.listens_for(ResourceType.__table__, 'after_create')
+def insert_initial_resource_types(target, connection, **kw):
+    connection.execute(
+        target.insert(),
+        [
+            {'type_name': 'VIDEO'},
+            {'type_name': 'STATIC_IMAGE'},
+            {'type_name': '3D'},
+        ]
+    )
+
+class Resource(db.Model):
+    __tablename__ = "resources"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    resource_type_id = Column(ForeignKey('resource_types.id'))
+    content = Column(LargeBinary, nullable=True)
 
 
