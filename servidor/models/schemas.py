@@ -1,12 +1,13 @@
 from database import db
-from sqlalchemy import text, CheckConstraint, event
+# 1. Importas las cosas directamente de sqlalchemy:
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, CheckConstraint, text, event
 
+# 2. Tu código queda súper limpio y con AUTOCOMPLETADO TOTAL:
 class Role(db.Model):
     __tablename__ = "roles"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    role_name = db.Column(db.String(30), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    role_name = Column(String(30), nullable=False)
 
-# 2. Eventos automáticos al crear la tabla
 @event.listens_for(Role.__table__, 'after_create')
 def insert_initial_roles(target, connection, **kw):
     connection.execute(
@@ -21,16 +22,16 @@ def insert_initial_roles(target, connection, **kw):
 
 class User(db.Model):
     __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    full_name = db.Column(db.String(100), nullable=False)
-    username = db.Column(db.String(30), nullable=False, unique=True)
-    password = db.Column(db.String(255), nullable=False)
-    role_id = db.Column(db.ForeignKey('roles.id'))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    full_name = Column(String(100), nullable=False)
+    username = Column(String(30), nullable=False, unique=True)
+    password = Column(String(255), nullable=False)
+    role_id = Column(ForeignKey('roles.id'))
 
 class Level(db.Model):
     __tablename__ = "levels"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    level_name = db.Column(db.String(2))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    level_name = Column(String(2))
 
 @event.listens_for(Level.__table__, 'after_create')
 def insert_initial_levels(target, connection, **kw):
@@ -48,10 +49,10 @@ def insert_initial_levels(target, connection, **kw):
 
 class UserPreference(db.Model):
     __tablename__ = "user_preferences"
-    user_id = db.Column(db.ForeignKey('users.id'), primary_key=True)
-    level_preference = db.Column(db.String(20), nullable=False, server_default=text("'NONE'"))
-    daily_goal = db.Column(db.Integer, nullable=False, server_default=text("10"))
-    audio_mode = db.Column(db.String(20), nullable=False, server_default=text("'FULL_AUDIO'"))
+    user_id = Column(ForeignKey('users.id'), primary_key=True)
+    level_preference = Column(String(20), nullable=False, server_default=text("'NONE'"))
+    daily_goal = Column(Integer, nullable=False, server_default=text("10"))
+    audio_mode = Column(String(20), nullable=False, server_default=text("'FULL_AUDIO'"))
 
     __table_args__ = (
         CheckConstraint(
@@ -70,10 +71,32 @@ class UserPreference(db.Model):
 
 class UserGameStats(db.Model):
     __tablename__ = "user_game_stats"
-    user_id = db.Column(db.ForeignKey('users.id'), primary_key=True)
-    current_level_id = db.Column(db.ForeignKey('levels.id'))
-    current_hearts = db.Column(db.Integer, nullable=False, server_default=text("5"))
-    total_score = db.Column(db.Integer, nullable=False, server_default=text("0"))
-    current_streak = db.Column(db.Integer, nullable=False, server_default=text("0"))
-    max_hearts = db.Column(db.Integer, nullable=False, server_default=text("5"))
-    last_activity_day = db.Column(db.Date, nullable=False)
+    user_id = Column(ForeignKey('users.id'), primary_key=True)
+    current_level_id = Column(ForeignKey('levels.id'))
+    current_hearts = Column(Integer, nullable=False, server_default=text("5"))
+    total_score = Column(Integer, nullable=False, server_default=text("0"))
+    current_streak = Column(Integer, nullable=False, server_default=text("0"))
+    max_hearts = Column(Integer, nullable=False, server_default=text("5"))
+    last_activity_day = Column(Date, nullable=False)
+
+class Section(db.Model):
+    __tablename__ = "sections"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(100), nullable=False)
+    level_id = Column(ForeignKey('levels.id'))
+
+class Unit(db.Model):
+    __tablename__ = "units"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    section_id = Column(ForeignKey('sections.id'))
+    title = Column(String(100), nullable=False)
+    color_scheme = Column(String(100), nullable=False)
+
+class Node(db.Model):
+    __tablename__ = "nodes"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(100), nullable=False)
+    unit_id = Column(ForeignKey('units.id'))
+    position = Column(Integer, nullable=False)
+
+
