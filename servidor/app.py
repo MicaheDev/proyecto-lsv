@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuración de la Base de Datos (ejemplo con SQLite)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///lsv.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///plsv.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Setup JWT

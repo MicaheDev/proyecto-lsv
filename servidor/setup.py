@@ -1,5 +1,5 @@
 from flask_bcrypt import Bcrypt
-from models.schemas import User, Role, UserPreference, UserGameStats
+from models.schemas import User, Role, UserPreference, UserGameStats, Level
 from database import db
 from datetime import date
 
@@ -9,15 +9,6 @@ ADMIN_FULL_NAME = 'Administrador'
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = '1234'
 ADMIN_ROLE_ID = 1
-
-def insert_roles():
-    roles_names = ["ADMIN", "TEACHER", "USER", "GUEST"]
-    for r_name in roles_names:
-        # En Flask-SQLAlchemy 3.x+, se consulta con db.session.scalar o filter_by:
-        role_exists = Role.query.filter_by(role_name=r_name).first()
-        if not role_exists:
-            db.session.add(Role(role_name=r_name))
-    db.session.commit()
 
 def add_admin():
     admin_exists = User.query.filter_by(username='admin').first()
@@ -54,5 +45,4 @@ def add_admin():
         db.session.commit()
 
 def setup():
-    insert_roles()
     add_admin()

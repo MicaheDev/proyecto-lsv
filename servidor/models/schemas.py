@@ -1,10 +1,23 @@
 from database import db
-from sqlalchemy import text, CheckConstraint
+from sqlalchemy import text, CheckConstraint, event
 
 class Role(db.Model):
     __tablename__ = "roles"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     role_name = db.Column(db.String(30), nullable=False)
+
+# 2. Eventos automáticos al crear la tabla
+@event.listens_for(Role.__table__, 'after_create')
+def insert_initial_roles(target, connection, **kw):
+    connection.execute(
+        target.insert(),
+        [
+            {'role_name': 'ADMIN'},
+            {'role_name': 'TEACHER'},
+            {'role_name': 'USER'},
+            {'role_name': 'GUEST'}
+        ]
+    )
 
 class User(db.Model):
     __tablename__ = "users"
@@ -18,6 +31,20 @@ class Level(db.Model):
     __tablename__ = "levels"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     level_name = db.Column(db.String(2))
+
+@event.listens_for(Level.__table__, 'after_create')
+def insert_initial_levels(target, connection, **kw):
+    connection.execute(
+        target.insert(),
+        [
+            {'level_name': 'A1'},
+            {'level_name': 'A2'},
+            {'level_name': 'B1'},
+            {'level_name': 'B2'},
+            {'level_name': 'C1'},
+            {'level_name': 'C2'}
+        ]
+    )
 
 class UserPreference(db.Model):
     __tablename__ = "user_preferences"
