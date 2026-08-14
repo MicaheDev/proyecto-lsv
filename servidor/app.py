@@ -6,6 +6,7 @@ from database import db
 from setup import setup
 
 from routes.auth import auth_bp
+from routes.users import users_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +30,7 @@ with app.app_context():
 # REGISTRO DE BLUEPRINTS
 # Al registrarlo aquí, todas las rutas de auth.py heredarán el /api/v1 automáticamente
 app.register_blueprint(auth_bp)
+app.register_blueprint(users_bp)
 
 @app.route("/")
 def hello_world():

@@ -28,33 +28,19 @@ function logout() {
 
 </script>
 <template>
-    <div class="c-profile-container" v-if="user_data && user_data.user_info">
+    <div class="p-6 flex flex-col" v-if="user_data && user_data.user_info">
 
         <span>{{ user_data.user_info.username }}</span>
         <span>{{ user_data.user_info.role }}</span>
         <span>{{ user_data.user_info.full_name }}</span>
         <span>{{ user_data.user_info.stats.current_level }}</span>
         <br>
-        <div v-if="user_data.user_info.role == 'ADMIN'">
+        <div class="flex flex-col" v-if="user_data.user_info.role == 'ADMIN'">
         <RouterLink to="/manage">Administrar</RouterLink>
         <RouterLink to="/studio">Studio</Routerlink>
         </div>
         <br>
-        <button v-on:click="logout">Cerrar Sesión</button>
+        <button class="w-min text-nowrap" v-on:click="logout">Cerrar Sesión</button>
     </div>
 </template>
 
-<style scoped>
-.c-profile-container {
-    padding: 20px;
-}
-
-div {
-    display: flex;
-    flex-direction: column;
-}
-
-button {
-    padding: 20px;
-}
-</style>
