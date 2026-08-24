@@ -106,6 +106,8 @@ class Lesson(db.Model):
     node_id = Column(ForeignKey('nodes.id'))
     required_exp = Column(Integer, nullable=False)
 
+
+
 class ChallengeType(db.Model):
     __tablename__ = "challenge_types"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -132,6 +134,14 @@ class Challenge(db.Model):
     challenge_type_id = Column(ForeignKey('challenge_types.id'))
     question = Column(String(100), nullable=False)
     sign_id = Column(ForeignKey('signs.id'))
+
+class ChallengeOption(db.Model):
+    __tablename__ = "challenge_options"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    challenge_id = Column(ForeignKey('challenges.id'))
+    option_text = Column(String(100), nullable=True)
+    sign_id = Column(ForeignKey('signs.id'), nullable=True) # Para opciones que son señas/imágenes
+    is_correct = Column(db.Boolean, default=False)
 
 class Sign(db.Model):
     __tablename__ = "signs"
@@ -166,5 +176,11 @@ class Resource(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     resource_type_id = Column(ForeignKey('resource_types.id'))
     content = Column(LargeBinary, nullable=True)
+
+class SignLandmark(db.Model):
+    __tablename__ = "sign_landmarks"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    sign_id = Column(ForeignKey('signs.id'), nullable=False)
+    landmarks_json = Column(db.Text, nullable=False) # Array de coordenadas x,y,z retornado por MediaPipe
 
 
