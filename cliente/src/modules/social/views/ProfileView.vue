@@ -36,7 +36,6 @@ function logout() {
         <span>{{ user_data.user_info.stats.current_level }}</span>
         <br>
         <div class="flex flex-col" v-if="user_data.user_info.role == 'ADMIN'">
-        <RouterLink to="/manage">Administrar</RouterLink>
         <RouterLink to="/studio">Studio</Routerlink>
         </div>
         <br>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LinguSeñas</string>
+    <string name="title_activity_main">LinguSeñas</string>
+    <string name="package_name">com.plsv.app</string>
+    <string name="custom_url_scheme">com.plsv.app</string>
+</resources>

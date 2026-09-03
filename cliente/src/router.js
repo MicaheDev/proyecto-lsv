@@ -9,13 +9,15 @@ import { onboardingRoutes } from "@/modules/onboarding";
 import { learningRoutes } from "@/modules/learning";
 import { socialRoutes } from "@/modules/social";
 import { dictionaryRoutes } from "@/modules/dictionary";
+import { studioRoutes } from "@/modules/studio";
 
 const routes = [
   ...onboardingRoutes,
   ...authRoutes,
   ...learningRoutes,
   ...socialRoutes,
-  ...dictionaryRoutes
+  ...dictionaryRoutes,
+  ...studioRoutes
 ];
 
 const router = createRouter({
